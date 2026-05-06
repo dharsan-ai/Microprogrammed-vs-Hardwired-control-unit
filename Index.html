@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Unit | Microprogrammed vs Hardwired</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: rgba(31, 42, 68, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #667eea;
+            display: inline-block;
+        }
+
+        .card h3 {
+            color: #3498db;
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        /* Two Column Layout */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .col {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 15px;
+        }
+
+        .col h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+
+        .col ul {
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .col li {
+            margin: 0.5rem 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .badge-fast { background: #27ae60; color: white; }
+        .badge-slow { background: #e74c3c; color: white; }
+        .badge-flex { background: #3498db; color: white; }
+        .badge-rigid { background: #95a5a6; color: white; }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .comparison-table td:first-child {
+            font-weight: bold;
+            background: #f0f0f0;
+        }
+
+        /* Quiz Section */
+        .quiz-area {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+        }
+
+        .quiz-question {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .quiz-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .quiz-result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1f2a44;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+            .nav-container {
+                gap: 0.5rem;
+            }
+            .nav-link {
+                padding: 0.3rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            .header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#home" class="nav-link"><i class="fas fa-home"></i> Home</a>
+            <a href="#about" class="nav-link"><i class="fas fa-microchip"></i> About CU</a>
+            <a href="#types" class="nav-link"><i class="fas fa-code-branch"></i> Types</a>
+            <a href="#comparison" class="nav-link"><i class="fas fa-chart-simple"></i> Comparison</a>
+            <a href="#quiz" class="nav-link"><i class="fas fa-question-circle"></i> Quiz</a>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="header" id="home">
+        <h1><i class="fas fa-microchip"></i> Control Unit in Computer Organization</h1>
+        <p>Microprogrammed vs Hardwired Control Units | A Comprehensive Comparison</p>
+    </header>
+
+    <div class="container">
+        <!-- About Section -->
+        <section id="about">
+            <div class="card">
+                <h2><i class="fas fa-info-circle"></i> What is a Control Unit?</h2>
+                <p>The Control Unit (CU) is a fundamental component of the CPU that directs all operations within a computer system. It generates control signals to coordinate the execution of instructions, manages data flow between CPU, memory, and I/O devices, and ensures proper sequencing of operations.</p>
+                <br>
+                <p><strong>Key Responsibilities:</strong></p>
+                <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                    <li>Instruction decoding and interpretation</li>
+                    <li>Generation of timing and control signals</li>
+                    <li>Coordination between ALU, memory, and registers</li>
+                    <li>Management of data flow within the CPU</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Types Section -->
+        <section id="types">
+            <div class="card">
+                <h2><i class="fas fa-code-branch"></i> Types of Control Units</h2>
+                <div class="two-col">
+                    <div class="col">
+                        <h3><i class="fas fa-microchip"></i> Hardwired Control Unit</h3>
+                        <p>Uses fixed logic circuits (gates, flip-flops, and combinational circuits) to generate control signals.</p>
+                        <ul>
+                            <li><span class="badge badge-fast">FAST</span> High execution speed</li>
+                            <li><span class="badge badge-rigid">RIGID</span> Difficult to modify</li>
+                            <li>Uses physical components</li>
+                            <li>Suitable for RISC processors</li>
+                            <li>Complex design process</li>
+                        </ul>
+                        <p><strong>Applications:</strong> Gaming CPUs, Real-time systems, RISC architectures</p>
+                    </div>
+                    <div class="col">
+                        <h3><i class="fas fa-database"></i> Microprogrammed Control Unit</h3>
+                        <p>Uses microinstructions stored in control memory (ROM or RAM) to generate control signals.</p>
+                        <ul>
+                            <li><span class="badge badge-slow">SLOWER</span> Memory access overhead</li>
+                            <li><span class="badge badge-flex">FLEXIBLE</span> Easy to update</li>
+                            <li>Uses control memory storage</li>
+                            <li>Suitable for CISC processors</li>
+                            <li>Easier design and debugging</li>
+                        </ul>
+                        <p><strong>Applications:</strong> CISC processors, Embedded systems, Virtual machines</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison Section -->
+        <section id="comparison">
+            <div class="card">
+                <h2><i class="fas fa-chart-simple"></i> Detailed Comparison</h2>
+                <table class="comparison-table">
+                    <thead>
+                        <tr><th>Feature</th><th>Hardwired Control Unit</th><th>Microprogrammed Control Unit</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Speed</td><td><i class="fas fa-tachometer-alt" style="color:#27ae60;"></i> Very Fast</td><td><i class="fas fa-clock" style="color:#e74c3c;"></i> Slow</td></tr>
+                        <tr><td>Flexibility</td><td><i class="fas fa-lock" style="color:#e74c3c;"></i> Low</td><td><i class="fas fa-expand" style="color:#27ae60;"></i> High</td></tr>
+                        <tr><td>Design Complexity</td><td><i class="fas fa-puzzle-piece" style="color:#e74c3c;"></i> Complex</td><td><i class="fas fa-cubes" style="color:#27ae60;"></i> Simple</td></tr>
+                        <tr><td>Modification</td><td><i class="fas fa-wrench" style="color:#e74c3c;"></i> Difficult</td><td><i class="fas fa-edit" style="color:#27ae60;"></i> Easy</td></tr>
+                        <tr><td>Cost</td><td>High for initial design</td><td>Moderate</td></tr>
+                        <tr><td>Memory Requirement</td><td>No control memory</td><td>Requires control ROM/RAM</td></tr>
+                        <tr><td>Instruction Set</td><td>Limited (RISC)</td><td>Complex (CISC)</td></tr>
+                        <tr><td>Debugging</td><td>Difficult</td><td>Easy</td></tr>
+                        <tr><td>Example Processors</td><td>ARM Cortex-A, Intel Core (microcode assist)</td><td>Intel 8086, Motorola 68000</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section id="quiz">
+            <div class="card quiz-area">
+                <h2><i class="fas fa-question-circle"></i> Quick Quiz</h2>
+                <p class="quiz-question">Which control unit is generally faster in execution?</p>
+                <div class="quiz-buttons">
+                    <button class="quiz-btn" onclick="checkAnswer('hardwired')"><i class="fas fa-microchip"></i> Hardwired Control Unit</button>
+                    <button class="quiz-btn" onclick="checkAnswer('micro')"><i class="fas fa-database"></i> Microprogrammed Control Unit</button>
+                </div>
+                <div id="quizResult" class="quiz-result"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p><i class="fas fa-graduation-cap"></i> Micro Project Submission | Computer Organization and Architecture</p>
+        <p>Karunya Institute of Technology and Sciences | April 2026</p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+            <i class="fas fa-users"></i> Team: Joshua D Daniel | Methusala K | Dharsan A I
+        </p>
+    </footer>
+
+    <script>
+        function checkAnswer(answer) {
+            const resultDiv = document.getElementById('quizResult');
+            if (answer === 'hardwired') {
+                resultDiv.innerHTML = '<i class="fas fa-check-circle"></i> ✅ Correct! Hardwired control units are faster because they use fixed logic circuits without memory access overhead.';
+                resultDiv.style.background = 'rgba(39, 174, 96, 0.3)';
+            } else {
+                resultDiv.innerHTML = '<i class="fas fa-times-circle"></i> ❌ Incorrect! Microprogrammed control units are slower due to control memory access time. Try again!';
+                resultDiv.style.background = 'rgba(231, 76, 60, 0.3)';
+            }
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
